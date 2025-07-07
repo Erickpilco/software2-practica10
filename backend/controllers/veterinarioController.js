@@ -42,7 +42,7 @@ const perfil = (req, resp) => {
 }
 const confirmar = async (req, resp) => {
 
-    const veterinarioEncontrado = await Veterinario.findOne({token: req.params.token})
+    const veterinarioEncontrado = await Veterinario.findOne({ token: req.params.token })
 
     if (!veterinarioEncontrado) {
         const error = new Error("Token no válido")
@@ -71,9 +71,9 @@ const confirmar = async (req, resp) => {
 
 const autenticar = async (req, resp) => {
 
-    const {email, password} = req.body
+    const { email, password } = req.body
 
-    const vet = await Veterinario.findOne({email})
+    const vet = await Veterinario.findOne({ email })
 
     if (!vet) {
         const error = new Error("Veterinario inexistente")
@@ -94,7 +94,7 @@ const autenticar = async (req, resp) => {
     // Autenticamos
 
     if (!await vet.comprobarPassword(password)) {
-        const error = new Error("Usuario y/o Contraseña no válidos")
+        const error = new Error(" Usuario y/o Contraseña incorrecta. Verifique sus credenciales. ")
         return resp.status(401).json({
             msg: error.message
         })
@@ -113,9 +113,9 @@ const autenticar = async (req, resp) => {
 }
 
 const olvidePassword = async (req, resp) => {
-    const {email} = req.body
+    const { email } = req.body
 
-    const existe = await Veterinario.findOne({email})
+    const existe = await Veterinario.findOne({ email })
 
     if (!existe) {
         const error = new Error("El veterinario no existe")
@@ -148,9 +148,9 @@ const olvidePassword = async (req, resp) => {
     }
 }
 const comprobarToken = async (req, resp) => {
-    const {token} = req.params
+    const { token } = req.params
 
-    const tokenValido = await Veterinario.findOne({token})
+    const tokenValido = await Veterinario.findOne({ token })
 
     if (tokenValido) {
         resp.json({
@@ -164,10 +164,10 @@ const comprobarToken = async (req, resp) => {
     }
 }
 const nuevoPassword = async (req, resp) => {
-    const {token} = req.params
-    const {password} = req.body
+    const { token } = req.params
+    const { password } = req.body
 
-    const veterinario = await Veterinario.findOne({token})
+    const veterinario = await Veterinario.findOne({ token })
 
     if (!veterinario) {
         const error = new Error("Token no válido")
@@ -181,15 +181,15 @@ const nuevoPassword = async (req, resp) => {
         veterinario.password = password
 
         await veterinario.save()
-        resp.json({msg: "El Password se actualizo correctamente"})
+        resp.json({ msg: "El Password se actualizo correctamente" })
     } catch (e) {
-        resp.json({msg: "No se pudo actualizar el password"})
+        resp.json({ msg: "No se pudo actualizar el password" })
     }
 }
 
 const actualizarPerfil = async (req, resp) => {
     const id = req.params.id
-    const {nombre, email, web, telefono} = req.body
+    const { nombre, email, web, telefono } = req.body
 
     let vet
 
@@ -225,7 +225,7 @@ const actualizarPerfil = async (req, resp) => {
 const actualizarPassword = async (req, resp) => {
 
     const id = req.veterinario
-    const {actualPassword, nuevoPassword} = req.body
+    const { actualPassword, nuevoPassword } = req.body
 
     console.log(actualPassword)
     console.log(nuevoPassword)
@@ -242,9 +242,9 @@ const actualizarPassword = async (req, resp) => {
     }
 
 
-    if (! await vet.comprobarPassword(actualPassword)){
+    if (! await vet.comprobarPassword(actualPassword)) {
         const error = new Error("Contraseña Actual Incorrecta")
-        return  resp.status(403).json({
+        return resp.status(403).json({
             msg: error.message
         })
     }
