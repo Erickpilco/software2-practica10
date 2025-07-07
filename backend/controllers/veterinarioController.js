@@ -70,49 +70,46 @@ const confirmar = async (req, resp) => {
 }
 
 const autenticar = async (req, resp) => {
+    try {
+        const { email, password } = req.body;
 
-    const { email, password } = req.body
+        const vet = await Veterinario.findOne({ email });
 
-    const vet = await Veterinario.findOne({ email })
+        if (!vet) {
+            const error = new Error("Veterinario inexistente");
+            return resp.status(404).json({ msg: error.message });
+        }
 
-    if (!vet) {
-        const error = new Error("Veterinario inexistente")
-        return resp.status(404).json({
-            msg: error.message
-        })
-    }
+        if (!vet.confirmado) {
+            console.error(`Intento de acceso con usuario NO confirmado: ${vet.email}`);
+            const error = new Error("Tu cuenta no ha sido confirmada. Verifica tu correo.");
+            return resp.status(403).json({ msg: error.message });
+        }
 
-    // Comprobamos si el usuario esta confirmado
+        if (!await vet.comprobarPassword(password)) {
+            const error = new Error("Contraseña incorrecta. Por favor verifique sus credenciales.");
+            return resp.status(401).json({ msg: error.message });
+        }
 
-    if (!vet.confirmado) {
-        console.error(`Intento de acceso con usuario NO confirmado: ${vet.email}`);
-        const error = new Error("Tu cuenta no ha sido confirmada. Verifica tu correo.");
-        return resp.status(403).json({
-            msg: error.message
+        resp.status(200).json({
+            vet: {
+                _id: vet._id,
+                nombre: vet.nombre,
+                email: vet.email,
+                telefono: vet.telefono,
+                web: vet.web
+            },
+            token: generarJWT(vet.id)
+        });
+
+    } catch (error) {
+        console.error("Error inesperado en la función autenticar:", error);
+        resp.status(500).json({
+            msg: "Ocurrió un error interno. Intenta más tarde."
         });
     }
-
-
-    // Autenticamos
-
-    if (!await vet.comprobarPassword(password)) {
-        const error = new Error(" Usuario y/o Contraseña incorrecta. Verifique sus credenciales. ")
-        return resp.status(401).json({
-            msg: error.message
-        })
-    }
-
-    resp.status(200).json({
-        vet: {
-            _id: vet._id,
-            nombre: vet.nombre,
-            email: vet.email,
-            telefono: vet.telefono,
-            web: vet.web
-        },
-        token: generarJWT(vet.id)
-    })
 }
+
 
 const olvidePassword = async (req, resp) => {
     const { email } = req.body
