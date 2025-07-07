@@ -85,11 +85,13 @@ const autenticar = async (req, resp) => {
     // Comprobamos si el usuario esta confirmado
 
     if (!vet.confirmado) {
-        const error = new Error("Veterinario No confirmado")
+        console.error(`Intento de acceso con usuario NO confirmado: ${vet.email}`);
+        const error = new Error("Tu cuenta no ha sido confirmada. Verifica tu correo.");
         return resp.status(403).json({
             msg: error.message
-        })
+        });
     }
+
 
     // Autenticamos
 
