@@ -8,7 +8,6 @@ import productoRoutes from "./routes/productoRoutes.js";
 import categoriaRoutes from "./routes/categoriaRoutes.js";
 import * as path from "path";
 import { fileURLToPath } from "url";
-import authRoutes from "./routes/authRoutes.js";
 
 const app = new express();
 const __filename = fileURLToPath(import.meta.url);
@@ -39,7 +38,6 @@ conectarDB().then(() => {
   app.use("/api/pacientes/", pacienteRoutes);
   app.use("/api/productos/", productoRoutes);
   app.use("/api/categorias/", categoriaRoutes);
-  app.use("/api/auth", authRoutes);
 });
 
 app.listen(PORT, () => {
